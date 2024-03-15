@@ -1,0 +1,45 @@
+k_out_of_n:
+    hard-1-of-5:
+        FailureReplace: 
+            mean: 1503.9
+            stderr: 4.3
+        TPI-CBM: 
+            mean: 1485.74
+            stderr: 4.3
+            policy: 147
+
+    hard-2-of-5:
+        FailureReplace: 
+            mean: 1502.8
+            stderr: 4.4
+        TPI-CBM: 
+            mean: 1498.8
+            stderr: 4.4
+            policy: 148
+        
+    hard-3-of-5:
+        FailureReplace: 
+            mean: 1658
+            stderr: 7.2
+        TPI-CBM: 
+            mean: 1654.19
+            stderr: 7.2
+            policy: 147
+
+    hard-4-of-5:
+        FailureReplace: 
+            mean: 4040.2
+            stderr: 22.2
+        TPI-CBM: 
+            mean: 3998.41
+            stderr: 22.2
+            policy: 149
+
+    hard-5-of-5:
+        FailureReplace:     
+            mean: 23825.1
+            stderr: 50.3 
+        TPI-CBM: 
+            mean: 19728.42
+            stderr: 48.7
+            policy: 14
