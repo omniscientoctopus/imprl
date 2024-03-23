@@ -11,18 +11,23 @@ numpy="^1.26.2"
 torch="~2.2.1"
 pyyaml="~6.0.1"
 gym="^0.23.1"
-matplotlib="^3.8.2"
+
+[tool.poetry.group.logging]
+optional = false
+[tool.poetry.group.logging.dependencies]
 wandb="~0.16.4"
+
+[tool.poetry.group.visualisation]
+optional = false
+[tool.poetry.group.visualisation.dependencies]
+matplotlib="^3.8.2"
+seaborn="^0.13.2"
 
 [tool.poetry.group.dev]
 optional = true
 [tool.poetry.group.dev.dependencies]
 pytest="~8.0.1"
-
-[tool.poetry.group.vis]
-optional = true
-[tool.poetry.group.vis.dependencies]
-seaborn="^0.13.2"
+black="^24.3.0"
 
 [build-system]
 requires = ["poetry-core"]
