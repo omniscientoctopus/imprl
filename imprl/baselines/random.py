@@ -1,4 +1,4 @@
-class Random():
+class Random:
 
     def __init__(self, env) -> None:
 

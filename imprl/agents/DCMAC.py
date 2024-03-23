@@ -14,27 +14,40 @@ class DeepCentralisedMultiAgentActorCritic(PGAgent):
         super().__init__(env, config, device)
 
         ## Neural networks
-        n_inputs = self.n_damage_states * self.n_components + 1  # shape: system_states + time
+        n_inputs = (
+            self.n_damage_states * self.n_components + 1
+        )  # shape: system_states + time
         n_outputs_actor = self.n_components * self.n_comp_actions
         n_outputs_critic = 1
 
-        self.actor_config['architecture'] = [n_inputs] + self.actor_config['hidden_layers'] + [n_outputs_actor]
-        self.critic_config['architecture'] = [n_inputs] + self.critic_config['hidden_layers'] + [n_outputs_critic] 
+        self.actor_config["architecture"] = (
+            [n_inputs] + self.actor_config["hidden_layers"] + [n_outputs_actor]
+        )
+        self.critic_config["architecture"] = (
+            [n_inputs] + self.critic_config["hidden_layers"] + [n_outputs_critic]
+        )
 
         # Actors (centralised: can observe the entire system state/belief)
-        self.actor = ActorNetwork(self.actor_config['architecture'],
-                                reshaping = (self.n_components, self.n_comp_actions),  # reshape logits to (n_components, n_comp_actions)
-                                initialization='orthogonal',
-                                optimizer=self.actor_config['optimizer'],
-                                learning_rate=self.actor_config['lr'],
-                                lr_scheduler=self.actor_config['lr_scheduler']).to(device)
+        self.actor = ActorNetwork(
+            self.actor_config["architecture"],
+            reshaping=(
+                self.n_components,
+                self.n_comp_actions,
+            ),  # reshape logits to (n_components, n_comp_actions)
+            initialization="orthogonal",
+            optimizer=self.actor_config["optimizer"],
+            learning_rate=self.actor_config["lr"],
+            lr_scheduler=self.actor_config["lr_scheduler"],
+        ).to(device)
 
         # Critic (centralised: can observe entire system state)
-        self.critic = NeuralNetwork(self.critic_config['architecture'],
-                                    initialization='orthogonal',
-                                    optimizer=self.critic_config['optimizer'],
-                                    learning_rate=self.critic_config['lr'],
-                                    lr_scheduler=self.critic_config['lr_scheduler']).to(device) 
+        self.critic = NeuralNetwork(
+            self.critic_config["architecture"],
+            initialization="orthogonal",
+            optimizer=self.critic_config["optimizer"],
+            learning_rate=self.critic_config["lr"],
+            lr_scheduler=self.critic_config["lr_scheduler"],
+        ).to(device)
 
     def get_greedy_action(self, observation, training):
 
@@ -86,8 +99,9 @@ class DeepCentralisedMultiAgentActorCritic(PGAgent):
 
     def compute_loss(self, *args):
 
-        (t_beliefs, t_next_beliefs, t_dones, 
-        t_rewards, t_actions, t_action_probs) = self._preprocess_inputs(*args)
+        (t_beliefs, t_next_beliefs, t_dones, t_rewards, t_actions, t_action_probs) = (
+            self._preprocess_inputs(*args)
+        )
 
         current_values = self.critic.forward(t_beliefs)
         td_targets = self.compute_td_target(t_next_beliefs, t_rewards, t_dones)
@@ -113,11 +127,15 @@ class DeepCentralisedMultiAgentActorCritic(PGAgent):
         torch.save(self.critic.state_dict(), f"{path}/critic_{episode}.pth")
 
     def load_weights(self, path, episode):
-        
+
         # load actor weights
-        full_path = f'{path}/actor_{episode}.pth'
-        self.actor.load_state_dict(torch.load(full_path, map_location=torch.device('cpu')))
-        
+        full_path = f"{path}/actor_{episode}.pth"
+        self.actor.load_state_dict(
+            torch.load(full_path, map_location=torch.device("cpu"))
+        )
+
         # load critic weights
-        full_path = f'{path}/critic_{episode}.pth'
-        self.critic.load_state_dict(torch.load(full_path, map_location=torch.device('cpu')))
+        full_path = f"{path}/critic_{episode}.pth"
+        self.critic.load_state_dict(
+            torch.load(full_path, map_location=torch.device("cpu"))
+        )

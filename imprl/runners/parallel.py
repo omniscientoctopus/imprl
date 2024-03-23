@@ -6,26 +6,39 @@ from imprl.runners.serial import evaluate_heuristic, evaluate_agent
 
 ############################## MPI #####################################
 
-def mpi_generic_rollout(env, heuristic, rollout_method, num_episodes, rank=0, num_procs=1):
-    
+
+def mpi_generic_rollout(
+    env, heuristic, rollout_method, num_episodes, rank=0, num_procs=1
+):
+
     result = []
     for _ in range(rank, num_episodes, num_procs):
         episode_cost = rollout_method(env, heuristic)
         result.append(episode_cost)
 
     return result
-    
+
+
 def mpi_heuristic_rollouts(env, heuristic, num_episodes, rank=0, num_procs=1):
 
-    return mpi_generic_rollout(env, heuristic, evaluate_heuristic, num_episodes, rank, num_procs)
+    return mpi_generic_rollout(
+        env, heuristic, evaluate_heuristic, num_episodes, rank, num_procs
+    )
+
 
 def mpi_agent_rollouts(env, agent, num_episodes, rank=0, num_procs=1):
-        
-    return mpi_generic_rollout(env, agent, evaluate_agent, num_episodes, rank, num_procs)
+
+    return mpi_generic_rollout(
+        env, agent, evaluate_agent, num_episodes, rank, num_procs
+    )
+
 
 ########################## Multiprocessing #############################
 
-def parallel_generic_rollout(env, heuristic, rollout_method, num_episodes, verbose=False):
+
+def parallel_generic_rollout(
+    env, heuristic, rollout_method, num_episodes, verbose=False
+):
 
     # cpu count = number of cores * logical cores
     cpu_count = mp.cpu_count()
@@ -34,8 +47,9 @@ def parallel_generic_rollout(env, heuristic, rollout_method, num_episodes, verbo
         print(f"CPU count: {cpu_count}")
 
     # create an iterable for the starmap
-    iterable = zip(itertools.repeat(env, num_episodes), 
-                   itertools.repeat(heuristic, num_episodes))
+    iterable = zip(
+        itertools.repeat(env, num_episodes), itertools.repeat(heuristic, num_episodes)
+    )
 
     with mp.Pool(cpu_count) as pool:
         list_func_evaluations = pool.starmap(rollout_method, iterable)
@@ -44,9 +58,13 @@ def parallel_generic_rollout(env, heuristic, rollout_method, num_episodes, verbo
 
     return results
 
+
 def parallel_heursitic_rollout(env, heuristic, num_episodes, verbose=False):
 
-    return parallel_generic_rollout(env, heuristic, evaluate_heuristic, num_episodes, verbose)
+    return parallel_generic_rollout(
+        env, heuristic, evaluate_heuristic, num_episodes, verbose
+    )
+
 
 def parallel_agent_rollout(env, agent, num_episodes, verbose=False):
 

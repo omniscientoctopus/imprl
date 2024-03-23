@@ -3,11 +3,13 @@ import random
 
 import numpy as np
 import torch
+
 torch.set_default_dtype(torch.float64)
 
 from imprl.agents.primitives.Value_agent import ValueAgent
 from imprl.agents.primitives.MLP import NeuralNetwork
 from imprl.agents.utils import preprocess_inputs
+
 
 class DDQNAgent(ValueAgent):
 
@@ -23,31 +25,41 @@ class DDQNAgent(ValueAgent):
         self.system_action_space = [list(action) for action in action_space]
 
         # Neural network parameters
-        n_inputs = self.n_damage_states * self.n_components + 1  # shape: system_states + 1
+        n_inputs = (
+            self.n_damage_states * self.n_components + 1
+        )  # shape: system_states + 1
         self.n_joint_actions = self.n_comp_actions**self.n_components  # output
 
-        self.network_config['architecture'] = [n_inputs] + self.network_config['hidden_layers'] + [self.n_joint_actions]
+        self.network_config["architecture"] = (
+            [n_inputs] + self.network_config["hidden_layers"] + [self.n_joint_actions]
+        )
 
         # initialise Q network and target network
-        self.q_network = NeuralNetwork( self.network_config["architecture"],
-                                        initialization='orthogonal',
-                                        optimizer=self.network_config["optimizer"],
-                                        learning_rate=self.network_config["lr"],
-                                        lr_scheduler=self.network_config["lr_scheduler"]).to(device)
+        self.q_network = NeuralNetwork(
+            self.network_config["architecture"],
+            initialization="orthogonal",
+            optimizer=self.network_config["optimizer"],
+            learning_rate=self.network_config["lr"],
+            lr_scheduler=self.network_config["lr_scheduler"],
+        ).to(device)
 
-        self.target_network = NeuralNetwork(self.network_config["architecture"]).to(device)
+        self.target_network = NeuralNetwork(self.network_config["architecture"]).to(
+            device
+        )
         # set weights equal
         self.target_network.load_state_dict(self.q_network.state_dict())
 
         # Initialization
-        self.target_network_reset = config['TARGET_NETWORK_RESET']
+        self.target_network_reset = config["TARGET_NETWORK_RESET"]
 
-        self.learning_log = {"TD_loss": None,
-                            "learning_rate": self.network_config["lr"]}
+        self.learning_log = {
+            "TD_loss": None,
+            "learning_rate": self.network_config["lr"],
+        }
 
     def get_random_action(self):
 
-        idx_action = random.randint(0, self.n_joint_actions-1)
+        idx_action = random.randint(0, self.n_joint_actions - 1)
         action = self.system_action_space[idx_action]
 
         return action, idx_action
@@ -92,8 +104,9 @@ class DDQNAgent(ValueAgent):
     def compute_loss(self, *args):
 
         # preprocess inputs
-        (t_beliefs, t_idx_actions, 
-        t_next_beliefs, t_rewards, t_dones) = self._preprocess_inputs(*args)
+        (t_beliefs, t_idx_actions, t_next_beliefs, t_rewards, t_dones) = (
+            self._preprocess_inputs(*args)
+        )
 
         td_targets = self.compute_td_target(t_next_beliefs, t_rewards, t_dones)
 
@@ -108,4 +121,6 @@ class DDQNAgent(ValueAgent):
 
     def load_weights(self, path, episode):
         full_path = f"{path}/q_network_{episode}.pth"
-        self.q_network.load_state_dict(torch.load(full_path, map_location=torch.device('cpu')))
+        self.q_network.load_state_dict(
+            torch.load(full_path, map_location=torch.device("cpu"))
+        )

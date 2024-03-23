@@ -81,9 +81,9 @@ def test_belief_update(kn_env):
     new_belief = kn_env.belief_update(belief, action, observation)
 
     # manually calculated beliefs
-    belief_0 = np.array([0.82, 0.13, 0.05, 0.0]) 
+    belief_0 = np.array([0.82, 0.13, 0.05, 0.0])
     belief_1 = np.array([0.72, 0.19, 0.09, 0.00])
-    belief_3 = np.array([0.00, 0.00, 0.00, 1.00])                   
+    belief_3 = np.array([0.00, 0.00, 0.00, 1.00])
     belief_4 = np.array([0.9832, 0.0167, 0.000, 0.000])
 
     # check belief update

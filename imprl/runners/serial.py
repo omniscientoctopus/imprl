@@ -1,4 +1,3 @@
-
 def training_rollout(env, agent):
 
     done = False
@@ -8,7 +7,7 @@ def training_rollout(env, agent):
     while not done:
 
         # select action
-        # _args are additional values (such as action_prob) to be stored 
+        # _args are additional values (such as action_prob) to be stored
         # in the replay buffer
         action, *_args = agent.select_action(obs, training=True)
 
@@ -17,12 +16,13 @@ def training_rollout(env, agent):
 
         # store experience in replay buffer
         agent.process_experience(obs, *_args, next_obs, reward, done)
-        
+
         # overwrite obs
-        obs = next_obs 
+        obs = next_obs
 
     # Total life cycle cost
     return -agent.episode_return
+
 
 def evaluate_agent(env, agent):
 
@@ -47,11 +47,12 @@ def evaluate_agent(env, agent):
     # Total life cycle cost
     return -agent.episode_return
 
+
 def evaluate_heuristic(env, heuristic):
 
     done = False
     _ = env.reset()
-    obs = env.info['observation']
+    obs = env.info["observation"]
     episode_return = 0
     time = 0
 
@@ -66,7 +67,7 @@ def evaluate_heuristic(env, heuristic):
         episode_return += env.discount_factor**time * reward
 
         # overwrite obs
-        obs = info['observation']
+        obs = info["observation"]
         time += 1
 
     # Total life cycle cost

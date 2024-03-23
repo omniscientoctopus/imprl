@@ -1,4 +1,4 @@
-class FailureReplace():
+class FailureReplace:
 
     def __init__(self, env) -> None:
         self.env = env
@@ -7,6 +7,6 @@ class FailureReplace():
     def policy(self, observation):
 
         # replace if in last damage state
-        action = [1 if obs == self.n_damage_states-1 else 0 for obs in observation]
+        action = [1 if obs == self.n_damage_states - 1 else 0 for obs in observation]
 
         return action

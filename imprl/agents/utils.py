@@ -29,19 +29,19 @@ def preprocess_inputs(states, batch_size=1):
 
     """
 
-    # 
+    #
 
     if batch_size > 1:
 
         concat_list = []
         for i, state in enumerate(states):
             t, system_state = state
-            concat_list.append(np.concatenate((t, system_state.flatten('F'))))
+            concat_list.append(np.concatenate((t, system_state.flatten("F"))))
             _concat = np.array(concat_list)
 
     else:
         t, system_state = states
-        _concat = np.concatenate((t, system_state.flatten('F'))).reshape(1, -1)
+        _concat = np.concatenate((t, system_state.flatten("F"))).reshape(1, -1)
 
     return torch.tensor(_concat)
 
@@ -52,7 +52,6 @@ def _get_from_device(input):
 
 
 def get_multiagent_obs(t_obs, S, M, batch_size=1):
-
     """
     Convert observation to multiagent observation.
 
@@ -73,7 +72,7 @@ def get_multiagent_obs(t_obs, S, M, batch_size=1):
     -------
     t_ma_obs : torch.tensor
         shape: (batch_size, n_components, n_damage_states + 1)
-    
+
     Example:
     --------
     M, S = 7, 4
@@ -109,7 +108,7 @@ def get_multiagent_obs(t_obs, S, M, batch_size=1):
                     0.0000e+00, 1.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 1.0000e+00,
                     0.0000e+00, 0.0000e+00, 0.0000e+00, 1.0000e+00, 0.0000e+00, 0.0000e+00,
                     0.0000e+00, 1.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00],
-                    
+
                     [8.8000e-01, 9.9572e-01, 4.2805e-03, 0.0000e+00, 0.0000e+00, 1.4554e-02,
                     9.7847e-01, 6.9763e-03, 0.0000e+00, 8.0384e-01, 1.3961e-01, 5.5345e-02,
                     1.2065e-03, 3.8313e-04, 9.9380e-01, 5.8135e-03, 0.0000e+00, 0.0000e+00,
@@ -134,18 +133,20 @@ def get_multiagent_obs(t_obs, S, M, batch_size=1):
 
     """
 
-    t_ma_obs = torch.empty((batch_size, M, S+1))
+    t_ma_obs = torch.empty((batch_size, M, S + 1))
 
     if batch_size == 1:
         t_ma_obs[:, :, 0] = t_obs[0][0]
         t_ma_obs[:, :, 1:] = t_obs[0][1:].view(M, S)
     elif batch_size > 1:
-        t_ma_obs[:, :, 0] = t_obs[:, 0].unsqueeze(1).expand(-1, M) # repeat time step
-        t_ma_obs[:, :, 1:] = t_obs[:, 1:].view(batch_size, M, S) # reshape damage states
+        t_ma_obs[:, :, 0] = t_obs[:, 0].unsqueeze(1).expand(-1, M)  # repeat time step
+        t_ma_obs[:, :, 1:] = t_obs[:, 1:].view(
+            batch_size, M, S
+        )  # reshape damage states
     return t_ma_obs
 
-def get_multiagent_obs_with_idx(t_obs, S, M, batch_size=1):
 
+def get_multiagent_obs_with_idx(t_obs, S, M, batch_size=1):
     """
     Append agent index to observation.
 
@@ -187,7 +188,7 @@ def get_multiagent_obs_with_idx(t_obs, S, M, batch_size=1):
                         [0., 1., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0.],
                         [0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0.],
                         [0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1.]]])
-    
+
     t_ma_obs = tensor([[[0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000],
                         [0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000],
                         [0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000, 0.0000, 0.0000, 0.0000, 0.0000],
@@ -206,6 +207,6 @@ def get_multiagent_obs_with_idx(t_obs, S, M, batch_size=1):
     """
 
     t_ma_obs = get_multiagent_obs(t_obs, S, M, batch_size=batch_size)
-    idx = torch.eye(M).unsqueeze(0).expand(batch_size, -1, -1) # agent indices
+    idx = torch.eye(M).unsqueeze(0).expand(batch_size, -1, -1)  # agent indices
 
     return torch.cat((t_ma_obs, idx), dim=2)

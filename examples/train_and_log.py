@@ -16,8 +16,8 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Running on: {device}")
 
 run = wandb.init(
-    project=None, # change this to your project name
-    entity=None, # change this to your username
+    project=None,  # change this to your project name
+    entity=None,  # change this to your username
 )
 
 # logging and checkpointing
@@ -28,9 +28,15 @@ num_inference_episodes = 1_000
 best_cost = math.inf
 best_checkpt = 0
 
-is_time_to_checkpoint = lambda ep: ep % checkpt_frequency == 0 or ep == wandb.config.NUM_EPISODES - 1
-is_time_to_log = lambda ep: ep % logging_frequency == 0 or ep == wandb.config.NUM_EPISODES - 1
-is_time_to_infer = lambda ep: ep % inferencing_frequency == 0 or ep == wandb.config.NUM_EPISODES - 1
+is_time_to_checkpoint = (
+    lambda ep: ep % checkpt_frequency == 0 or ep == wandb.config.NUM_EPISODES - 1
+)
+is_time_to_log = (
+    lambda ep: ep % logging_frequency == 0 or ep == wandb.config.NUM_EPISODES - 1
+)
+is_time_to_infer = (
+    lambda ep: ep % inferencing_frequency == 0 or ep == wandb.config.NUM_EPISODES - 1
+)
 
 checkpt_dir = wandb.run.dir
 print("Checkpoint directory: ", checkpt_dir)
@@ -72,7 +78,9 @@ for ep in range(config["NUM_EPISODES"]):
     # INFERENCE
     if is_time_to_infer(ep):
         TrainedAgent = agent_class(env, config, device)  # create a new agent
-        TrainedAgent.load_weights(checkpt_dir, ep)  # load the weights of the trained agent
+        TrainedAgent.load_weights(
+            checkpt_dir, ep
+        )  # load the weights of the trained agent
 
         eval_costs = []
         # evaluate the agent
@@ -87,9 +95,9 @@ for ep in range(config["NUM_EPISODES"]):
             best_cost = _mean
             best_checkpt = ep
 
-        training_log.update({"inference_ep": ep,
-                            "inference_mean": _mean, 
-                            "inference_stderr": _stderr})
+        training_log.update(
+            {"inference_ep": ep, "inference_mean": _mean, "inference_stderr": _stderr}
+        )
 
     # LOGGING
     if is_time_to_log(ep):

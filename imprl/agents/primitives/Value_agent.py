@@ -1,9 +1,11 @@
 import numpy as np
 import torch
+
 torch.set_default_dtype(torch.float64)
 
 from imprl.agents.primitives.agent import Agent
 from imprl.agents.utils import preprocess_inputs
+
 
 class ValueAgent(Agent):
 
@@ -11,10 +13,12 @@ class ValueAgent(Agent):
 
         super().__init__(env, config, device)
 
-        self.network_config = config['NETWORK_CONFIG']
+        self.network_config = config["NETWORK_CONFIG"]
 
-        self.learning_log = {"TD_loss": None,
-                             "learning_rate": self.network_config["lr"]}
+        self.learning_log = {
+            "TD_loss": None,
+            "learning_rate": self.network_config["lr"],
+        }
 
     def reset_episode(self, training=True):
 
@@ -31,7 +35,9 @@ class ValueAgent(Agent):
             self.q_network.lr_scheduler.step()
 
             # logging
-            self.learning_log["learning_rate"] = self.q_network.lr_scheduler.get_last_lr()[0]
+            self.learning_log["learning_rate"] = (
+                self.q_network.lr_scheduler.get_last_lr()[0]
+            )
 
     def process_experience(self, belief, idx_action, next_belief, reward, done):
 
@@ -48,8 +54,8 @@ class ValueAgent(Agent):
             self.train(*sample_batch)
 
         if done:
-            self.logger['episode'] = self.episode
-            self.logger['episode_cost'] = -self.episode_return
+            self.logger["episode"] = self.episode
+            self.logger["episode_cost"] = -self.episode_return
 
     def train(self, *args):
 
@@ -63,13 +69,16 @@ class ValueAgent(Agent):
         # logging value update
         self.logger["TD_loss"] = loss.detach()
 
-
     def _preprocess_inputs(self, beliefs, idx_actions, next_beliefs, rewards, dones):
-        
+
         t_beliefs = preprocess_inputs(beliefs, self.batch_size).to(self.device)
         t_idx_actions = torch.tensor(idx_actions).reshape(-1, 1).to(self.device)
-        t_next_beliefs = preprocess_inputs(next_beliefs, self.batch_size).to(self.device)
-        t_dones = torch.tensor(np.asarray(dones).astype(int)).reshape(-1, 1).to(self.device)
+        t_next_beliefs = preprocess_inputs(next_beliefs, self.batch_size).to(
+            self.device
+        )
+        t_dones = (
+            torch.tensor(np.asarray(dones).astype(int)).reshape(-1, 1).to(self.device)
+        )
         t_rewards = torch.tensor(rewards).reshape(-1, 1).to(self.device)
 
         return t_beliefs, t_idx_actions, t_next_beliefs, t_rewards, t_dones

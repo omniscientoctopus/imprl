@@ -14,16 +14,22 @@ class IndependentActorCritic(PGAgent):
         super().__init__(env, config, device)
 
         ## Neural networks
-        n_inputs = self.n_damage_states + 1 # shape: component_states + time
+        n_inputs = self.n_damage_states + 1  # shape: component_states + time
         n_outputs_actor = self.n_comp_actions
         n_outputs_critic = 1
 
-        self.actor_config['architecture'] = [n_inputs] + self.actor_config['hidden_layers'] + [n_outputs_actor]
-        self.critic_config['architecture'] = [n_inputs] + self.critic_config['hidden_layers'] + [n_outputs_critic] 
+        self.actor_config["architecture"] = (
+            [n_inputs] + self.actor_config["hidden_layers"] + [n_outputs_actor]
+        )
+        self.critic_config["architecture"] = (
+            [n_inputs] + self.critic_config["hidden_layers"] + [n_outputs_critic]
+        )
 
         # Actors
         # (decentralised: can only observe component state/belief)
-        self.actor = MultiAgentActors(self.n_components, self.n_comp_actions, self.actor_config, device)
+        self.actor = MultiAgentActors(
+            self.n_components, self.n_comp_actions, self.actor_config, device
+        )
 
         # Critics (decentralised: can observe only component state/belief)
         self.critic = MultiAgentCritics(self.n_components, self.critic_config, device)
@@ -40,7 +46,9 @@ class IndependentActorCritic(PGAgent):
 
         # bootstrapping
         # shape: (batch_size, num_components)
-        future_values = self.critic.forward(t_ma_next_beliefs, training=True) # shape: (batch_size, num_components)
+        future_values = self.critic.forward(
+            t_ma_next_beliefs, training=True
+        )  # shape: (batch_size, num_components)
 
         return future_values
 
@@ -73,15 +81,27 @@ class IndependentActorCritic(PGAgent):
 
     def compute_loss(self, *args):
 
-        (t_ma_beliefs, t_actions, t_action_probs,
-         t_ma_next_beliefs, t_rewards, t_dones) = self._preprocess_inputs(*args)
+        (
+            t_ma_beliefs,
+            t_actions,
+            t_action_probs,
+            t_ma_next_beliefs,
+            t_rewards,
+            t_dones,
+        ) = self._preprocess_inputs(*args)
 
         # input shape: (batch_size)
         # output shape: (batch_size, num_damage_states+1, n_components)n_components
-        current_values = self.critic.forward(t_ma_beliefs, training=True) # shape: (batch_size, num_components)
-        td_targets = self.compute_td_target(t_ma_next_beliefs, t_rewards, t_dones) # shape: (batch_size, n_components)
+        current_values = self.critic.forward(
+            t_ma_beliefs, training=True
+        )  # shape: (batch_size, num_components)
+        td_targets = self.compute_td_target(
+            t_ma_next_beliefs, t_rewards, t_dones
+        )  # shape: (batch_size, n_components)
 
-        advantage = (td_targets - current_values).detach() # shape: (batch_size, n_components)
+        advantage = (
+            td_targets - current_values
+        ).detach()  # shape: (batch_size, n_components)
 
         # compute log_prob actions
         # shape: (batch_size, num_components)
@@ -101,49 +121,82 @@ class IndependentActorCritic(PGAgent):
         # weights * (current_values - td_targets)^2
         # (B, 1)  * ((B, M) - (B, M))^2 => (B, M)
         # we take the mean across batches and add losses of all critics
-        critic_loss = torch.mean(weights * torch.square(current_values - td_targets), dim=0).sum()
+        critic_loss = torch.mean(
+            weights * torch.square(current_values - td_targets), dim=0
+        ).sum()
 
         # t_log_probs @ advantage.T
         # (B, M) * (B, M) => (B, M)
         # torch.sum(B, M, dim=1,keepdim=True) => (B, 1)
         # torch.mean(-(B, 1) * (B, 1)) => scalar
-        actor_loss = torch.mean(-torch.sum(t_log_probs * advantage, dim=1, keepdim=True) * weights)
+        actor_loss = torch.mean(
+            -torch.sum(t_log_probs * advantage, dim=1, keepdim=True) * weights
+        )
 
         return actor_loss, critic_loss
 
-    def _preprocess_inputs(self, beliefs, actions, action_probs, next_beliefs, rewards, dones):
-        
+    def _preprocess_inputs(
+        self, beliefs, actions, action_probs, next_beliefs, rewards, dones
+    ):
+
         t_beliefs = preprocess_inputs(beliefs, self.batch_size).to(self.device)
-        t_next_beliefs = preprocess_inputs(next_beliefs, self.batch_size).to(self.device)
-        t_dones = torch.tensor(np.asarray(dones).astype(int)).reshape(-1, 1).to(self.device)
+        t_next_beliefs = preprocess_inputs(next_beliefs, self.batch_size).to(
+            self.device
+        )
+        t_dones = (
+            torch.tensor(np.asarray(dones).astype(int)).reshape(-1, 1).to(self.device)
+        )
         t_rewards = torch.tensor(rewards).reshape(-1, 1).to(self.device)
         t_actions = torch.stack(actions).to(self.device)
         t_action_probs = torch.tensor(action_probs).to(self.device)
 
         # output shape: (batch_size, num_damage_states+1, num_components)
-        t_ma_beliefs = self.get_multiagent_obs(t_beliefs, self.batch_size).to(self.device)
-        t_ma_next_beliefs = self.get_multiagent_obs(t_next_beliefs, self.batch_size).to(self.device)
+        t_ma_beliefs = self.get_multiagent_obs(t_beliefs, self.batch_size).to(
+            self.device
+        )
+        t_ma_next_beliefs = self.get_multiagent_obs(t_next_beliefs, self.batch_size).to(
+            self.device
+        )
 
-        return t_ma_beliefs,t_actions,t_action_probs,t_ma_next_beliefs,t_rewards,t_dones
+        return (
+            t_ma_beliefs,
+            t_actions,
+            t_action_probs,
+            t_ma_next_beliefs,
+            t_rewards,
+            t_dones,
+        )
 
     def save_weights(self, path, episode):
 
         for c in range(self.n_components):
             actor_network = self.actor.networks[c]
-            torch.save(actor_network.state_dict(), f'{path}/actor_{c+1}_{episode}.pth')
+            torch.save(actor_network.state_dict(), f"{path}/actor_{c+1}_{episode}.pth")
 
             critic_network = self.critic.networks[c]
-            torch.save(critic_network.state_dict(), f'{path}/critic_{c+1}_{episode}.pth')
+            torch.save(
+                critic_network.state_dict(), f"{path}/critic_{c+1}_{episode}.pth"
+            )
 
     def load_weights(self, path, episode):
 
         for c in range(self.n_components):
 
             actor_network = self.actor.networks[c]
-            actor_network.load_state_dict(torch.load(f'{path}/actor_{c+1}_{episode}.pth', map_location=torch.device('cpu')))
+            actor_network.load_state_dict(
+                torch.load(
+                    f"{path}/actor_{c+1}_{episode}.pth",
+                    map_location=torch.device("cpu"),
+                )
+            )
 
             critic_network = self.critic.networks[c]
-            critic_network.load_state_dict(torch.load(f'{path}/critic_{c+1}_{episode}.pth', map_location=torch.device('cpu')))
+            critic_network.load_state_dict(
+                torch.load(
+                    f"{path}/critic_{c+1}_{episode}.pth",
+                    map_location=torch.device("cpu"),
+                )
+            )
 
     def evaluate_critic(self, beliefs, batch_size=1):
 

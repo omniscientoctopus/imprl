@@ -4,27 +4,30 @@ from imprl.agents.primitives.MLP import NeuralNetwork
 
 
 class ActorNetwork(NeuralNetwork):
-
     """
     A class to create an actor network for policy gradients.
     It simply adds a softmax head to the NeuralNetwork class.
     """
 
-    def __init__(self,
-                architecture,
-                reshaping=None,
-                activation='relu',
-                initialization='orthogonal',
-                optimizer=None,
-                learning_rate=None,
-                lr_scheduler=None) -> None:
-        super().__init__(architecture,
-                        activation=activation,
-                        initialization=initialization,
-                        loss='cross_entropy',
-                        optimizer=optimizer,
-                        learning_rate=learning_rate,
-                        lr_scheduler=lr_scheduler)
+    def __init__(
+        self,
+        architecture,
+        reshaping=None,
+        activation="relu",
+        initialization="orthogonal",
+        optimizer=None,
+        learning_rate=None,
+        lr_scheduler=None,
+    ) -> None:
+        super().__init__(
+            architecture,
+            activation=activation,
+            initialization=initialization,
+            loss="cross_entropy",
+            optimizer=optimizer,
+            learning_rate=learning_rate,
+            lr_scheduler=lr_scheduler,
+        )
 
         # shape: (n_components, n_actions)
         # shape: (4, 3)
@@ -41,7 +44,6 @@ class ActorNetwork(NeuralNetwork):
         self.Categorical = torch.distributions.categorical.Categorical
 
     def forward(self, x, training=True):
-
         """
         Parameters
         ----------
