@@ -7,14 +7,14 @@ torch.set_default_dtype(torch.float64)
 
 from imprl.agents.primitives.Value_agent import ValueAgent
 from imprl.agents.primitives.MLP import NeuralNetwork
-from imprl.agents.utils import preprocess_inputs, _get_from_device
+from imprl.agents.utils import preprocess_inputs
 
 class DDQNAgent(ValueAgent):
 
     def __init__(self, env, config, device):
 
         super().__init__(env, config, device)
-        
+
         # Compute joint action space
         # enumerate all possible action combinations
         action_space = list(
@@ -30,6 +30,7 @@ class DDQNAgent(ValueAgent):
 
         # initialise Q network and target network
         self.q_network = NeuralNetwork( self.network_config["architecture"],
+                                        initialization='orthogonal',
                                         optimizer=self.network_config["optimizer"],
                                         learning_rate=self.network_config["lr"],
                                         lr_scheduler=self.network_config["lr_scheduler"]).to(device)
@@ -45,7 +46,7 @@ class DDQNAgent(ValueAgent):
                             "learning_rate": self.network_config["lr"]}
 
     def get_random_action(self):
-        
+
         idx_action = random.randint(0, self.n_joint_actions-1)
         action = self.system_action_space[idx_action]
 
@@ -57,9 +58,8 @@ class DDQNAgent(ValueAgent):
         t_states = preprocess_inputs(observation, batch_size=1).to(self.device)
         q_values = self.q_network.forward(t_states, training)
 
-        max_indices = torch.nonzero(q_values == q_values.max()).flatten()
-        idx_action = random.choice(_get_from_device(max_indices))
-        
+        idx_action = torch.argmax(q_values).item()
+
         action = self.system_action_space[idx_action]
 
         if training:
@@ -69,53 +69,19 @@ class DDQNAgent(ValueAgent):
 
     def compute_current_values(self, t_observations, t_idx_actions):
 
-        """
-        Compute current Q-values for given observations and actions.
-
-        Parameters
-        ----------
-        t_observations : torch.Tensor
-            (batch_size, num_damage_states, num_components)
-
-        idx_actions : list
-            (batch_size)
-
-        Returns
-        -------
-        value : torch.Tensor
-            (batch_size, 1)
-
-        """
-
         q_values = self.q_network.forward(t_observations)
 
         return torch.gather(q_values, dim=1, index=t_idx_actions)
 
-
     def get_future_values(self, t_next_beliefs):
 
-        """
-        Compute future values for Q-learning.
-
-        Parameters
-        ----------
-        t_next_observation : torch.Tensor
-            (batch_size, num_damage_states, num_components)
-
-        Returns
-        -------
-        future_values : torch.Tensor
-            (batch_size, 1)      
-        
-        """
-        
         # compute Q-values using Q-network
         q_values = self.q_network.forward(t_next_beliefs).detach()
 
         # compute argmax over actions
         t_idx_best_actions = torch.argmax(q_values, axis=1, keepdim=True)
 
-        # compute Q-values using *target* network
+        # compute future Q-values using *target* network
         target_q_values = self.target_network.forward(t_next_beliefs).detach()
 
         # select values correspoding to best actions
@@ -125,35 +91,9 @@ class DDQNAgent(ValueAgent):
 
     def compute_loss(self, *args):
 
-        """
-        Compute loss for Q-learning.
-
-        Parameters
-        ----------
-        beliefs : list
-            list of tuples (t, (num_damage_states, num_components))
-
-        idx_actions : list
-            list of ints
-
-        next_beliefs : list
-            list of tuples (t+1, (num_damage_states, num_components))
-
-        rewards : list
-            list of floats
-
-        dones : list
-            list of bools
-
-        Returns
-        -------
-        loss : torch.Tensor
-
-        """
-
         # preprocess inputs
         (t_beliefs, t_idx_actions, 
-         t_next_beliefs, t_rewards, t_dones) = self._preprocess_inputs(*args)
+        t_next_beliefs, t_rewards, t_dones) = self._preprocess_inputs(*args)
 
         td_targets = self.compute_td_target(t_next_beliefs, t_rewards, t_dones)
 
@@ -167,4 +107,5 @@ class DDQNAgent(ValueAgent):
         torch.save(self.q_network.state_dict(), f"{path}/q_network_{episode}.pth")
 
     def load_weights(self, path, episode):
-        self.q_network.load_state_dict(torch.load(f"{path}/q_network_{episode}.pth", map_location=torch.device('cpu')))
+        full_path = f"{path}/q_network_{episode}.pth"
+        self.q_network.load_state_dict(torch.load(full_path, map_location=torch.device('cpu')))

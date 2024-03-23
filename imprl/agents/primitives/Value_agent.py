@@ -53,27 +53,6 @@ class ValueAgent(Agent):
 
     def train(self, *args):
 
-        """
-        Train Q-network using Q-learning.   
-
-        Parameters
-        ----------
-        beliefs : list
-            list of tuples (t, (num_damage_states, num_components))     
-
-        idx_actions : list
-            list of ints
-
-        next_beliefs : list
-            list of tuples (t+1, (num_damage_states, num_components))
-
-        rewards : list
-            list of floats
-
-        dones : list
-
-        """
-
         loss = self.compute_loss(*args)
 
         # Zero gradients, perform a backward pass, and update the weights.
@@ -87,9 +66,9 @@ class ValueAgent(Agent):
 
     def _preprocess_inputs(self, beliefs, idx_actions, next_beliefs, rewards, dones):
         
-        t_beliefs = preprocess_inputs(beliefs, batch_size=self.batch_size).to(self.device)
+        t_beliefs = preprocess_inputs(beliefs, self.batch_size).to(self.device)
         t_idx_actions = torch.tensor(idx_actions).reshape(-1, 1).to(self.device)
-        t_next_beliefs = preprocess_inputs(next_beliefs, batch_size=self.batch_size).to(self.device)
+        t_next_beliefs = preprocess_inputs(next_beliefs, self.batch_size).to(self.device)
         t_dones = torch.tensor(np.asarray(dones).astype(int)).reshape(-1, 1).to(self.device)
         t_rewards = torch.tensor(rewards).reshape(-1, 1).to(self.device)
 
