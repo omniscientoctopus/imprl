@@ -1,6 +1,5 @@
 import yaml
-import pkg_resources
-
+from importlib_resources import files
 
 def load_config(yaml_file=None, algorithm=None):
 
@@ -30,8 +29,9 @@ def load_config(yaml_file=None, algorithm=None):
     elif algorithm is not None:
 
         # load default config
-        config_file = pkg_resources.resource_string('imprl', f'agents/configs/{algorithm}.yaml')
-        config = yaml.safe_load(config_file)
+        config_file = files('imprl.agents.configs').joinpath(f'{algorithm}.yaml')
+        with open(config_file, 'r') as config_file:
+            config = yaml.safe_load(config_file)
 
         print(f"Loaded default configuration for {algorithm}.")
 
