@@ -1,13 +1,50 @@
 # Inspection and Maintenance Planning using Reinforcement Learning (IMPRL)
 
-A (beginner-friendly) library for applying reinforcement learning to inspection and maintenance planning of deteriorating engineering systems. This library was primarily developed as a pedogogic excercise and use for my research.
+A (beginner-friendly) library for applying reinforcement learning to inspection and maintenance planning of deteriorating engineering systems. This library was primarily developed as a pedogogic excercise and for research use.
 
 ## Installation
+
+### 1. Create a virtual environment
+
+```bash
+conda create --name imprl_env -y python==3.9
+conda activate imprl_env
+```
+
+### 2. Install the dependencies
+
+```bash
+pip install poetry==1.8
+poetry install
+```
+
+Following best practices, `poetry install` installs the dependencies from the `poetry.lock` file. This file rigorously specifies all the dependencies required to build the library. It ensures that the project does not break because of unexpected changes in (transitive) dependencies ([more info](https://python-poetry.org/docs/basic-usage/#installing-with-poetrylock)).
+
+<details>
+<summary>Installing additional packages</summary>
+
+You can them add via `poetry add` ([official docs](https://python-poetry.org/docs/cli/#add)) in the command line. 
+
+For example, to install [Jupyter notebook](https://pypi.org/project/notebook/),
+
+```bash 
+# Allow >=7.1.2, <8.0.0 versions
+poetry add notebook@^7.1.2
+```
+This will resolve the package dependencies (and adjust versions of transitive dependencies if necessary) and install the package. If the package dependency cannot be resolved, try to relax the package version and try again.
+</details>
+
+### 3. Setup wandb
+
+```bash
+wandb login
+# <enter wandb API key>
+```
 
 
 ## RL Agents
 
-The following multiagent reinforcement algorithms are implemented,
+The following (multiagent) reinforcement algorithms are implemented,
   - Double Deep Q-Network (DDQN)
   - Joint Actor Critic (JAC)
   - Deep Centralized Multiagent Actor Critic (DCMAC)
@@ -20,7 +57,7 @@ The following multiagent reinforcement algorithms are implemented,
 
 ## Acknowledgements
 
-This project utilizes the clever abstractions used in [EPyMARL](https://github.com/uoe-agents/epymarl) and the author would like to acknowledge the insights shared in [Reinforcement Learning Implementation Tips and Tricks](https://agents.inf.ed.ac.uk/blog/reinforcement-learning-implementation-tricks/) for developing this library.
+This project utilizes the clever abstractions in [EPyMARL](https://github.com/uoe-agents/epymarl) and the author would like to acknowledge the insights shared in [Reinforcement Learning Implementation Tips and Tricks](https://agents.inf.ed.ac.uk/blog/reinforcement-learning-implementation-tricks/) for developing this library.
 
 
 ## Related Work
