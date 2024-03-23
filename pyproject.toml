@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "imprl"
+version = "0.1.0"
+description = "A (beginner-friendly) library for applying reinforcement learning to inspection and maintenance planning of deteriorating engineering systems."
+authors = ["Prateek Bhustali <p.bhustali@tudelft.nl>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python="~3.9"
+numpy="^1.26.2"
+torch="~2.2.1"
+pyyaml="~6.0.1"
+gym="^0.23.1"
+matplotlib="^3.8.2"
+wandb="~0.16.4"
+
+[tool.poetry.group.dev]
+optional = true
+[tool.poetry.group.dev.dependencies]
+pytest="~8.0.1"
+
+[tool.poetry.group.vis]
+optional = true
+[tool.poetry.group.vis.dependencies]
+seaborn="^0.13.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
