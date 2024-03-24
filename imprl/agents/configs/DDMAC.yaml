@@ -1,6 +1,6 @@
 ALGORITHM: DDMAC
 
-NUM_EPISODES: 500
+NUM_EPISODES: 100_000
 MAX_MEMORY_SIZE: 500_000
 BATCH_SIZE: 64
 
@@ -30,5 +30,5 @@ EXPLORATION_STRATEGY:
       name: epsilon_greedy
       max_value: 1
       min_value: 0.005
-      num_episodes: 10_000
+      num_episodes: 20_000
       

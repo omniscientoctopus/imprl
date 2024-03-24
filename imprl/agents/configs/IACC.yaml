@@ -1,19 +1,19 @@
 ALGORITHM: IACC
 
-NUM_EPISODES: 100
+NUM_EPISODES: 100_000
 MAX_MEMORY_SIZE: 10_000
 BATCH_SIZE: 64
 
 ACTOR_CONFIG:
     hidden_layers: [16, 16]
     optimizer: Adam
-    lr: 0.0001
+    lr: 0.0005
     lr_scheduler:
         scheduler: LinearLR
         kwargs:
             start_factor: 1
             end_factor: 0.1
-            total_iters: 40_000
+            total_iters: 10_000
 
 CRITIC_CONFIG:
     hidden_layers: [64, 64]
@@ -24,11 +24,11 @@ CRITIC_CONFIG:
         kwargs:
             start_factor: 1
             end_factor: 0.1
-            total_iters: 40_000
+            total_iters: 10_000
 
 EXPLORATION_STRATEGY:
       name: epsilon_greedy
       max_value: 1
-      min_value: 0.005
+      min_value: 0.001
       num_episodes: 10_000
       
