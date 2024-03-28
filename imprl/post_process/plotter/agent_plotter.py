@@ -79,7 +79,7 @@ class AgentPlotter(Plotter):
         self.data = data
 
         # get base plot from Plotter
-        fig, ax_dict, legend_handles, barplot = super().plot()
+        fig, ax_dict, legend_handles, barplot = super()._plot()
 
         _y_action = 2
 
