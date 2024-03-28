@@ -52,9 +52,7 @@ class HeuristicPlotter(Plotter):
 
             # if inspection took place
             if inspected_components:
-                _inspection_cost = (
-                    self.env.cost_action[inspected_components, 2].sum()
-                )
+                _inspection_cost = self.env.cost_action[inspected_components, 2].sum()
                 episode_reward += _inspection_cost
                 data["cost_inspections"][time] = _inspection_cost
                 data["inspections"][time] = 1
@@ -65,9 +63,7 @@ class HeuristicPlotter(Plotter):
             observation = info["observation"]  # update observation
 
             data["cost_penalties"][time] = info["cost_penalty"]
-            data["cost_replacements"][time] = (
-                info["cost_replacement"]
-            )
+            data["cost_replacements"][time] = info["cost_replacement"]
             data["failure_prob"][time + 1] = 1 - info["system_reliability"]
 
             # note system failure timepoints

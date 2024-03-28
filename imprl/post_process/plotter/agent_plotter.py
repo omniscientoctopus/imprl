@@ -50,15 +50,9 @@ class AgentPlotter(Plotter):
             data["beliefs"][time + 1, :, :] = system_belief
             data["actions"][time, :] = action
             data["rewards"][time] = reward
-            data["cost_penalties"][time] = (
-                info["reward_penalty"]
-            )
-            data["cost_inspections"][time] = (
-                info["reward_inspection"]
-            )
-            data["cost_replacements"][time] = (
-                info["reward_replacement"]
-            )
+            data["cost_penalties"][time] = info["reward_penalty"]
+            data["cost_inspections"][time] = info["reward_inspection"]
+            data["cost_replacements"][time] = info["reward_replacement"]
 
             # note system failure timepoints
             if info["reward_penalty"] != 0:

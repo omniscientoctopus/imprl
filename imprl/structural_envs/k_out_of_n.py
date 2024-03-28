@@ -163,7 +163,7 @@ class KOutOfN:
             )
 
         # discounted reward
-        _discount_factor = self.discount_factor ** self.time
+        _discount_factor = self.discount_factor**self.time
         reward_replacement *= _discount_factor
         reward_inspection *= _discount_factor
         reward_penalty *= _discount_factor

@@ -98,7 +98,10 @@ class TimePeriodicInspectionConditionBasedMaintenance:
 
             # if inspection took place
             if inspected_components:
-                inspection_reward = env.discount_factor ** time * env.rewards_table[inspected_components, 0, 2].sum()
+                inspection_reward = (
+                    env.discount_factor**time
+                    * env.rewards_table[inspected_components, 0, 2].sum()
+                )
             else:
                 inspection_reward = 0
 
