@@ -4,8 +4,6 @@ import random
 import numpy as np
 import torch
 
-torch.set_default_dtype(torch.float64)
-
 from imprl.agents.primitives.Value_agent import ValueAgent
 from imprl.agents.primitives.MLP import NeuralNetwork
 from imprl.agents.utils import preprocess_inputs

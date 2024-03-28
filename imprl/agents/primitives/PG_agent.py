@@ -1,8 +1,6 @@
 import numpy as np
 import torch
 
-torch.set_default_dtype(torch.float64)
-
 from imprl.agents.primitives.agent import Agent
 from imprl.agents.utils import preprocess_inputs
 
