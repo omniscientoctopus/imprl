@@ -98,13 +98,13 @@ class TimePeriodicInspectionConditionBasedMaintenance:
 
             # if inspection took place
             if inspected_components:
-                inspection_reward = env.rewards_table[inspected_components, 0, 2].sum()
+                inspection_reward = env.discount_factor ** time * env.rewards_table[inspected_components, 0, 2].sum()
             else:
                 inspection_reward = 0
 
             observation = info["observation"]
 
-            episode_reward += env.discount_factor**time * (reward + inspection_reward)
+            episode_reward += reward + inspection_reward
 
             time += 1
 

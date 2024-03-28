@@ -49,15 +49,15 @@ class AgentPlotter(Plotter):
             _, system_belief = next_observation
             data["beliefs"][time + 1, :, :] = system_belief
             data["actions"][time, :] = action
-            data["rewards"][time] = self.env.discount_factor**time * reward
+            data["rewards"][time] = reward
             data["cost_penalties"][time] = (
-                self.env.discount_factor**time * info["reward_penalty"]
+                info["reward_penalty"]
             )
             data["cost_inspections"][time] = (
-                self.env.discount_factor**time * info["reward_inspection"]
+                info["reward_inspection"]
             )
             data["cost_replacements"][time] = (
-                self.env.discount_factor**time * info["reward_replacement"]
+                info["reward_replacement"]
             )
 
             # note system failure timepoints
@@ -68,7 +68,7 @@ class AgentPlotter(Plotter):
             observation = next_observation
 
             # update episode reward
-            episode_reward += self.env.discount_factor**time * reward
+            episode_reward += reward
 
             # update time
             time += 1

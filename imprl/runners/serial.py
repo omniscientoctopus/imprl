@@ -64,7 +64,7 @@ def evaluate_heuristic(env, heuristic):
         # step in the environment
         _, reward, done, info = env.step(action)
 
-        episode_return += env.discount_factor**time * reward
+        episode_return += reward
 
         # overwrite obs
         obs = info["observation"]

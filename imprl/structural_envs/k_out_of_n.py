@@ -162,6 +162,12 @@ class KOutOfN:
                 self.FAILURE_PENALTY_FACTOR * self.system_replacement_reward
             )
 
+        # discounted reward
+        _discount_factor = self.discount_factor ** self.time
+        reward_replacement *= _discount_factor
+        reward_inspection *= _discount_factor
+        reward_penalty *= _discount_factor
+
         reward = reward_replacement + reward_inspection + reward_penalty
 
         return reward, reward_replacement, reward_inspection, reward_penalty

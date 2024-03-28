@@ -280,7 +280,7 @@ class AnimatedRollout:
             observation = next_observation
 
             # update episode reward
-            episode_reward += self.env.discount_factor**time * reward
+            episode_reward += reward
 
             # update time
             time += 1
