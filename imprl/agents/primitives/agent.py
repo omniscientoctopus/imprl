@@ -21,18 +21,16 @@ class Agent:
         self.action_space = env.action_space
         self.n_components = env.n_components  # number of components
         self.n_damage_states = env.n_damage_states  # damage states per component
-        self.n_comp_actions = (
-            env.n_comp_actions
-        )  # actions per component [do nothing, replace]
-        self.discount = env.discount_factor
+        self.n_comp_actions = env.n_comp_actions
 
         # Initialization
         self.episode = 0
         self.total_time = 0  # total time steps in lifetime
         self.time = 0  # time steps in current episode
-        self.episode_return = 0  # discounted return in current episode
+        self.episode_return = 0  # return in current episode
 
         ## Training parameters
+        self.discount_factor = config["DISCOUNT_FACTOR"]
         self.batch_size = config["BATCH_SIZE"]
         self.exploration_strategy = config["EXPLORATION_STRATEGY"]
         self.exploration_param = self.exploration_strategy["max_value"]
@@ -82,7 +80,7 @@ class Agent:
 
     def process_rewards(self, reward):
 
-        self.episode_return += self.discount**self.time * reward
+        self.episode_return += reward
 
         # updating time here so that only this method needs to be called
         # during inference
@@ -97,7 +95,7 @@ class Agent:
         # set future values of done states to 0
         not_dones = 1 - t_dones
         future_values *= not_dones
-        td_target = t_rewards + self.discount * future_values
+        td_target = t_rewards + self.discount_factor * future_values
 
         return td_target.detach()
 
