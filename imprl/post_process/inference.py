@@ -15,7 +15,6 @@ from imprl.baselines.TPI_CBM import (
     TimePeriodicInspectionConditionBasedMaintenance as TPI_CBM,
 )
 from imprl.post_process.plotter.agent_plotter import AgentPlotter
-from imprl.post_process.plotter.heuristic_plotter import HeuristicPlotter
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -89,8 +88,6 @@ class HeuristicInference(Inference):
             i = self.env.baselines[self.name]["policy"]
             self.optimal_policy = self.baseline.policy_space[i]
 
-            self.plotter = HeuristicPlotter(self.env, self.optimal_policy)
-
     def run(self, num_episodes=100):
         if self.name == "random":
             self.episode_costs = parallel_heursitic_rollout(
@@ -110,7 +107,3 @@ class HeuristicInference(Inference):
         _ = self.compute_stats(self.episode_costs)
 
         return self.episode_costs
-
-    def plot_rollout(self, **kwargs):
-
-        self.plotter.plot(**kwargs)
