@@ -1,6 +1,6 @@
 # Inspection and Maintenance Planning using Reinforcement Learning (IMPRL)
 
-A (beginner-friendly) library for applying reinforcement learning to inspection and maintenance planning of deteriorating engineering systems. This library was primarily developed as a pedogogic excercise and for research use.
+A library for applying reinforcement learning to inspection and maintenance planning of deteriorating engineering systems. This library was primarily developed as a pedogogic excercise and for research use.
 
 ## Installation
 
@@ -57,16 +57,6 @@ The base actor-critic algorithm: ACER from [SAMPLE EFFICIENT ACTOR-CRITIC WITH E
 
 ### Classification of algorithms
 
-<style type="text/css">
-.tg  {border-collapse:collapse;border-spacing:0;margin:0px auto;}
-.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-  overflow:hidden;padding:10px 5px;word-break:normal;}
-.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
-.tg .tg-9wq8{border-color:inherit;text-align:center;vertical-align:middle}
-.tg .tg-8bgf{border-color:inherit;font-style:italic;text-align:center;vertical-align:top}
-.tg .tg-g7sd{border-color:inherit;font-weight:bold;text-align:left;vertical-align:middle}
-@media screen and (max-width: 767px) {.tg {width: auto !important;}.tg col {width: auto !important;}.tg-wrap {overflow-x: auto;-webkit-overflow-scrolling: touch;margin: auto 0px;}}</style>
 <div class="tg-wrap"><table class="tg">
 <tbody>
   <tr>
