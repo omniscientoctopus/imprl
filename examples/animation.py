@@ -4,7 +4,7 @@ import torch
 import imprl.agents
 import imprl.structural_envs as structural_envs
 from imprl.agents.configs.get_config import load_config
-from imprl.post_process.plotter.animation import AnimatedRollout
+from imprl.post_process.plotter.rollout_animation import AnimatedRollout
 from imprl.post_process.inference import AgentInference
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

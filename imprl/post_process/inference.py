@@ -14,7 +14,7 @@ from imprl.baselines.failure_replace import FailureReplace
 from imprl.baselines.TPI_CBM import (
     TimePeriodicInspectionConditionBasedMaintenance as TPI_CBM,
 )
-from imprl.post_process.plotter.agent_plotter import AgentPlotter
+from imprl.post_process.plotter.rollout_plotter import AgentPlotter
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 

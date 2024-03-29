@@ -3,14 +3,14 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
 
-class Plotter:
+class AbstractBaseClass:
     def __init__(self, env) -> None:
         self.env = env
         self.time_horizon = env.time_horizon
         self.num_components = env.n_components
         self.num_damage_states = env.n_damage_states
 
-    def _plot(self):
+    def _setup_plot(self):
         # check if data has obs or beliefs
         sns.set_theme(style="white", palette="muted")
 

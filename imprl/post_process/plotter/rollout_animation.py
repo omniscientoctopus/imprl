@@ -1,6 +1,11 @@
 """ 
+!This is a work in progress.
 
-Click on the figure to pause, and press any key to continue.
+The idea is to create an animated plot of the agent's actions over time.
+
+# TODO:
+- Click on the figure to pause, and press any key to continue.
+- Save gif with save_fig_kwargs={"filename": "animated_rollout.gif"}
 
 """
 
@@ -11,7 +16,7 @@ import matplotlib.animation as animation
 import matplotlib.transforms as mtransforms
 from matplotlib.lines import Line2D
 
-from imprl.post_process.plotter.agent_plotter import AgentPlotter
+from imprl.post_process.plotter.rollout_plotter import AgentPlotter
 
 sns.set_theme(style="white", palette="muted")
 
@@ -21,7 +26,7 @@ class AnimatedRollout(AgentPlotter):
         super().__init__(env, agent)
 
         # initialize figure
-        self.fig, self.ax_dict, legend_handles, barplot = self._plot()
+        self.fig, self.ax_dict, legend_handles, barplot = self._setup_plot()
 
         # line objects for each line
         # [belief, true state]

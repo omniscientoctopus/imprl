@@ -1,10 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
-from imprl.post_process.plotter.plotter import Plotter
+from imprl.post_process.plotter.base_class import AbstractBaseClass
 
 
-class AgentPlotter(Plotter):
+class AgentPlotter(AbstractBaseClass):
     def __init__(self, env, agent):
         super().__init__(env)
 
@@ -79,7 +79,7 @@ class AgentPlotter(Plotter):
         self.data = data
 
         # get base plot from Plotter
-        fig, ax_dict, legend_handles, barplot = super()._plot()
+        fig, ax_dict, legend_handles, barplot = super()._setup_plot()
 
         _y_action = 2
 
