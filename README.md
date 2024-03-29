@@ -41,7 +41,6 @@ wandb login
 # <enter wandb API key>
 ```
 
-
 ## RL Agents
 
 The following (multiagent) reinforcement algorithms are implemented,
@@ -54,6 +53,80 @@ The following (multiagent) reinforcement algorithms are implemented,
   - Independent Actor Critic (IAC)
   - Independent Actor Critic with Paramater Sharing (IAC-PS)
 
+The base actor-critic algorithm: ACER from [SAMPLE EFFICIENT ACTOR-CRITIC WITH EXPERIENCE REPLAY](https://arxiv.org/pdf/1611.01224.pdf) by Wang et al, an off-policy algorithm that uses weighted sampling for experience replay.
+
+### Classification of algorithms
+
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;margin:0px auto;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-9wq8{border-color:inherit;text-align:center;vertical-align:middle}
+.tg .tg-8bgf{border-color:inherit;font-style:italic;text-align:center;vertical-align:top}
+.tg .tg-g7sd{border-color:inherit;font-weight:bold;text-align:left;vertical-align:middle}
+@media screen and (max-width: 767px) {.tg {width: auto !important;}.tg col {width: auto !important;}.tg-wrap {overflow-x: auto;-webkit-overflow-scrolling: touch;margin: auto 0px;}}</style>
+<div class="tg-wrap"><table class="tg">
+<tbody>
+  <tr>
+    <td class="tg-8bgf">Paradigm</td>
+    <td class="tg-8bgf">Mathematical<br>Framework</td>
+    <td class="tg-8bgf">Algorithm</td>
+    <td class="tg-8bgf">Observation</td>
+    <td class="tg-8bgf">Action</td>
+    <td class="tg-8bgf">Critic</td>
+    <td class="tg-8bgf">Actor <br></td>
+  </tr>
+  <tr>
+    <td class="tg-9wq8" rowspan="3">CTCE</td>
+    <td class="tg-9wq8">POMDP</td>
+    <td class="tg-g7sd">JAC</td>
+    <td class="tg-9wq8" rowspan="3">Joint</td>
+    <td class="tg-9wq8">Joint</td>
+    <td class="tg-9wq8" rowspan="3">Centralized</td>
+    <td class="tg-9wq8">Shared</td>
+  </tr>
+  <tr>
+    <td class="tg-9wq8" rowspan="2"><span style="font-weight:400;font-style:normal">MPOMDP</span></td>
+    <td class="tg-g7sd">DCMAC</td>
+    <td class="tg-9wq8">Factored</td>
+    <td class="tg-9wq8">Shared</td>
+  </tr>
+  <tr>
+    <td class="tg-g7sd">DDMAC</td>
+    <td class="tg-9wq8">Factored</td>
+    <td class="tg-9wq8">Independent</td>
+  </tr>
+  <tr>
+    <td class="tg-9wq8" rowspan="2">CTDE</td>
+    <td class="tg-9wq8" rowspan="4">Dec-POMDP</td>
+    <td class="tg-g7sd">IACC</td>
+    <td class="tg-9wq8" rowspan="2">Independent</td>
+    <td class="tg-9wq8">Independent</td>
+    <td class="tg-9wq8" rowspan="2">Centralized</td>
+    <td class="tg-9wq8"><span style="font-weight:400;font-style:normal">Independent</span></td>
+  </tr>
+  <tr>
+    <td class="tg-g7sd">IACC-PS</td>
+    <td class="tg-9wq8">Independent</td>
+    <td class="tg-9wq8">Shared</td>
+  </tr>
+  <tr>
+    <td class="tg-9wq8" rowspan="2">DTDE</td>
+    <td class="tg-g7sd">IAC</td>
+    <td class="tg-9wq8" rowspan="2"><span style="font-weight:400;font-style:normal">Independent</span></td>
+    <td class="tg-9wq8">Independent</td>
+    <td class="tg-9wq8" rowspan="2">Decentralized</td>
+    <td class="tg-9wq8"><span style="font-weight:400;font-style:normal">Independent</span></td>
+  </tr>
+  <tr>
+    <td class="tg-g7sd">IAC-PS</td>
+    <td class="tg-9wq8">Independent</td>
+    <td class="tg-9wq8">Shared</td>
+  </tr>
+</tbody>
+</table></div>
 
 ## Acknowledgements
 
@@ -61,7 +134,6 @@ This project utilizes the clever abstractions in [EPyMARL](https://github.com/uo
 
 
 ## Related Work
-
 
 - [IMP-MARL](https://github.com/moratodpg/imp_marl): a platform for benchmarking the scalability of cooperative MARL methods in real-world engineering applications.
     - What's different: 
