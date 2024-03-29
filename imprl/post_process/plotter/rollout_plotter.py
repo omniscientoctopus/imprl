@@ -1,10 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
-from imprl.post_process.plotter.plotter import Plotter
+from imprl.post_process.plotter.base_class import AbstractBaseClass
 
 
-class AgentPlotter(Plotter):
+class AgentPlotter(AbstractBaseClass):
     def __init__(self, env, agent):
         super().__init__(env)
 
@@ -50,15 +50,9 @@ class AgentPlotter(Plotter):
             data["beliefs"][time + 1, :, :] = system_belief
             data["actions"][time, :] = action
             data["rewards"][time] = reward
-            data["cost_penalties"][time] = (
-                info["reward_penalty"]
-            )
-            data["cost_inspections"][time] = (
-                info["reward_inspection"]
-            )
-            data["cost_replacements"][time] = (
-                info["reward_replacement"]
-            )
+            data["cost_penalties"][time] = info["reward_penalty"]
+            data["cost_inspections"][time] = info["reward_inspection"]
+            data["cost_replacements"][time] = info["reward_replacement"]
 
             # note system failure timepoints
             if info["reward_penalty"] != 0:
@@ -85,7 +79,7 @@ class AgentPlotter(Plotter):
         self.data = data
 
         # get base plot from Plotter
-        fig, ax_dict, legend_handles, barplot = super().plot()
+        fig, ax_dict, legend_handles, barplot = super()._setup_plot()
 
         _y_action = 2
 

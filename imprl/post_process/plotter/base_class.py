@@ -1,17 +1,16 @@
 import seaborn as sns
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
-import numpy as np
 
 
-class Plotter:
+class AbstractBaseClass:
     def __init__(self, env) -> None:
         self.env = env
         self.time_horizon = env.time_horizon
         self.num_components = env.n_components
         self.num_damage_states = env.n_damage_states
 
-    def plot(self):
+    def _setup_plot(self):
         # check if data has obs or beliefs
         sns.set_theme(style="white", palette="muted")
 
@@ -65,9 +64,7 @@ class Plotter:
         barplot = ax_dict["B"].barh(labels, [0] * 3, color=colors, height=0.4)
         ax_dict["B"].set_xlim([0, 100])
         ax_dict["B"].set_xticks([0, 25, 50, 75, 100])
-        ax_dict["B"].set_xticklabels(
-            ["0%", "25%", "50%", "75%", "100%"]
-        )  # Add percentage symbols to x-axis ticks
+        ax_dict["B"].set_xticklabels(["0%", "25%", "50%", "75%", "100%"])
 
         return fig, ax_dict, legend_handles, barplot
 

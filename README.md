@@ -2,6 +2,10 @@
 
 A library for applying reinforcement learning to inspection and maintenance planning of deteriorating engineering systems. This library was primarily developed as a pedogogic excercise and for research use.
 
+Example rollout of a DDQN agent in a 5-out-of-5 system:
+
+![](examples/rollout-hard-5-of-5-DDQN.png)
+
 ## Installation
 
 ### 1. Create a virtual environment
@@ -35,6 +39,8 @@ This will resolve the package dependencies (and adjust versions of transitive de
 </details>
 
 ### 3. Setup wandb
+
+For logging, the library relies on [wandb](https://wandb.ai). You can log into wandb using your private API key, 
 
 ```bash
 wandb login
@@ -117,6 +123,8 @@ The base actor-critic algorithm: ACER from [SAMPLE EFFICIENT ACTOR-CRITIC WITH E
   </tr>
 </tbody>
 </table></div>
+
+
 
 ## Acknowledgements
 
