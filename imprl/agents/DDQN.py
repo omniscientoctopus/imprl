@@ -50,7 +50,7 @@ class DDQNAgent(ValueAgent):
         # Initialization
         self.target_network_reset = config["TARGET_NETWORK_RESET"]
 
-        self.learning_log = {
+        self.logger = {
             "TD_loss": None,
             "learning_rate": self.network_config["lr"],
         }

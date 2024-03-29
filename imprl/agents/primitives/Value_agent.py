@@ -13,7 +13,7 @@ class ValueAgent(Agent):
 
         self.network_config = config["NETWORK_CONFIG"]
 
-        self.learning_log = {
+        self.logger = {
             "TD_loss": None,
             "learning_rate": self.network_config["lr"],
         }
@@ -33,7 +33,7 @@ class ValueAgent(Agent):
             self.q_network.lr_scheduler.step()
 
             # logging
-            self.learning_log["learning_rate"] = (
+            self.logger["learning_rate"] = (
                 self.q_network.lr_scheduler.get_last_lr()[0]
             )
 
