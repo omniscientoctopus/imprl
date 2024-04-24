@@ -2,52 +2,22 @@ import random
 from collections import deque
 
 
-class ReplayMemory:
-
-    # ReplayMemory should store the last "size" experiences
-    # and be able to return a randomly sampled batch of experiences
+class AbstractReplayMemory:
     def __init__(self, size):
         self.size = size
         self.memory = deque(maxlen=size)
 
-    # Store experience in memory
-    def store_experience(self, observation, action, next_observation, reward, done):
-        self.memory.append((observation, action, next_observation, reward, done))
-
-    # Randomly sample "batch_size" experiences from the memory and return them
-    def sample_batch(self, batch_size):
-
-        samples = random.sample(self.memory, batch_size)
-
-        _obs = []
-        _actions = []
-        _next_obs = []
-        _rewards = []
-        _dones = []
-
-        for sample in samples:
-            _obs.append(sample[0])
-            _actions.append(sample[1])
-            _next_obs.append(sample[2])
-            _rewards.append(sample[3])
-            _dones.append(sample[4])
-
-        return (_obs, _actions, _next_obs, _rewards, _dones)
-
-
-class AbstractReplayMemory(ReplayMemory):
-    def __init__(self, size):
-        super().__init__(size)
-
-    # store experience in memory
     def store_experience(self, *args):
         self.memory.append(args)
 
-    # Randomly sample "batch_size" experiences from the memory and return them
     def sample_batch(self, batch_size):
+        """Randomly sample batch_size experiences from the memory"""
 
-        # sample "batch_size" experiences from the memory
         experiences = random.sample(self.memory, batch_size)
+
+        return self._create_lists(experiences)
+
+    def _create_lists(self, experiences):
 
         num_elements = len(experiences[0])
 
@@ -63,3 +33,37 @@ class AbstractReplayMemory(ReplayMemory):
                 lists[element].append(experience[element])
 
         return lists
+
+
+class EpisodicReplayMemory(AbstractReplayMemory):
+
+    def __init__(self, size):
+        super().__init__(size)
+
+        self.experience = []
+
+    def store_experience(self, *args):
+
+        self.experience.append(args)
+
+        # check if the episode is complete
+        if args[-1]:  # done
+            self.memory.append(self.experience)
+            self.experience = []
+
+    def sample_batch(self, batch_size, num_splits=1):
+
+        all_episodes = random.sample(self.memory, batch_size)
+
+        split_size = len(all_episodes) // num_splits
+        experiences = [[] for _ in range(num_splits)]
+
+        for i in range(num_splits):
+            start = i * split_size
+            end = (
+                (i + 1) * split_size if i != num_splits - 1 else None
+            )  # Extend to the end for the last split
+            for episode in all_episodes[start:end]:
+                experiences[i].extend(episode)
+
+        return [self._create_lists(experience) for experience in experiences]
