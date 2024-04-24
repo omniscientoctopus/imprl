@@ -16,11 +16,13 @@ class NeuralNetwork(nn.Module):
         optimizer=None,
         learning_rate=None,
         lr_scheduler=None,
+        dropout_prob=0.0,
     ):
         super().__init__()
 
         self.initialization = initialization
         self.activation_name = activation
+        self.dropout = torch.nn.Dropout(dropout_prob)
 
         # activation function
         if activation == "relu":
@@ -73,6 +75,7 @@ class NeuralNetwork(nn.Module):
         with torch.inference_mode(not training):
             for i in range(len(self.linears) - 1):
                 z = self.linears[i](a)
+                z = self.dropout(z)
                 a = self.activation(z)
             a = self.linears[-1](a)
 
