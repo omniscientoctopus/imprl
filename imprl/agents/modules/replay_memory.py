@@ -51,19 +51,25 @@ class EpisodicReplayMemory(AbstractReplayMemory):
             self.memory.append(self.experience)
             self.experience = []
 
-    def sample_batch(self, batch_size, num_splits=1):
+    def sample_batch(self, batch_size):
+        episodes = random.sample(self.memory, batch_size)
+        return self.create_batch(episodes)
 
-        all_episodes = random.sample(self.memory, batch_size)
+    def create_batch(self, episodes):
+        experiences = [experience for episode in episodes for experience in episode]
+        return self._create_lists(experiences)
 
-        split_size = len(all_episodes) // num_splits
-        experiences = [[] for _ in range(num_splits)]
+    def create_dataset(self, size, ratios=[1]):
 
-        for i in range(num_splits):
-            start = i * split_size
-            end = (
-                (i + 1) * split_size if i != num_splits - 1 else None
-            )  # Extend to the end for the last split
+        all_episodes = random.sample(self.memory, size)
+
+        split_size = [int(size * ratio) for ratio in ratios]
+        split_episodes = [[] for _ in range(len(ratios))]
+
+        for i, split in enumerate(split_size):
+            start = sum(split_size[:i])
+            end = start + split
             for episode in all_episodes[start:end]:
-                experiences[i].extend(episode)
+                split_episodes[i].append(episode)
 
-        return [self._create_lists(experience) for experience in experiences]
+        return split_episodes
