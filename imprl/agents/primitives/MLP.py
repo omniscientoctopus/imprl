@@ -75,8 +75,8 @@ class NeuralNetwork(nn.Module):
         with torch.inference_mode(not training):
             for i in range(len(self.linears) - 1):
                 z = self.linears[i](a)
-                z = self.dropout(z)
                 a = self.activation(z)
+                a = self.dropout(a) if training else a
             a = self.linears[-1](a)
 
         return a
