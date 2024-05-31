@@ -10,7 +10,7 @@ from imprl.agents.IAC_PS import IndependentActorCriticParameterSharing as IAC_PS
 from imprl.agents.IACC_PS import (
     IndependentActorCentralisedCriticParameterSharing as IACC_PS,
 )
-
+from imprl.agents.VDN import ValueDecompositionNetworkParameterSharing as VDN_PS
 
 def get_agent_class(algorithm):
     try:
