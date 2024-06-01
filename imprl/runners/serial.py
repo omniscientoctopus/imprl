@@ -2,6 +2,7 @@ def training_rollout(env, agent):
 
     done = False
     obs = env.reset()
+    state = env.info["state"]
     agent.reset_episode()
 
     while not done:
@@ -12,10 +13,18 @@ def training_rollout(env, agent):
         action, *_args = agent.select_action(obs, training=True)
 
         # step in the environment
-        next_obs, reward, done, _ = env.step(action)
+        next_obs, reward, done, info = env.step(action)
 
         # store experience in replay buffer
-        agent.process_experience(obs, *_args, next_obs, reward, done)
+        if hasattr(agent, 'collect_state_info'):
+            next_state = info["state"]
+            agent.process_experience(
+                obs, state, *_args, next_obs, next_state, reward, done
+            )
+            # overwrite state
+            state = next_state
+        else:
+            agent.process_experience(obs, *_args, next_obs, reward, done)
 
         # overwrite obs
         obs = next_obs

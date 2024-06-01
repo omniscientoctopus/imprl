@@ -116,6 +116,16 @@ class KOutOfN:
             self.observation_model[c, 2, :, :] = self.inspection_model[c]
 
         # Gym Spaces
+        self.state_space = gym.spaces.Tuple(
+            (
+                # normalized time
+                gym.spaces.Box(0, 1, shape=(1,)),
+                # damage states
+                gym.spaces.MultiDiscrete(
+                    np.ones(self.n_components, dtype=int) * self.n_damage_states
+                ),
+            )
+        )
         self.observation_space = gym.spaces.Tuple(
             (
                 # normalized time
@@ -245,6 +255,7 @@ class KOutOfN:
 
         # update time
         self.time += 1
+        self.norm_time = self.time / self.time_horizon
 
         # check if terminal state
         done = True if self.time == self.time_horizon else False
@@ -254,6 +265,7 @@ class KOutOfN:
         self.info["reward_replacement"] = reward_replacement
         self.info["reward_inspection"] = reward_inspection
         self.info["reward_penalty"] = reward_penalty
+        self.info["state"] = self._get_state()
         self.info["observation"] = self.observation
 
         return self._get_observation(), reward, done, self.info
@@ -270,12 +282,14 @@ class KOutOfN:
 
         # reset the time
         self.time = 0
+        self.norm_time = self.time / self.time_horizon
 
         self.info = {
             "system_failure": False,
             "reward_replacement": 0,
             "reward_inspection": 0,
             "reward_penalty": 0,
+            "state": self._get_state(),
             "observation": self.observation,
         }
 
@@ -283,7 +297,10 @@ class KOutOfN:
 
     def _get_observation(self) -> tuple[np.array, np.array]:
 
-        # compute normalised time [0, 1]
-        norm_time = self.time / self.time_horizon
+        return (np.array([self.norm_time]), self.belief)
 
-        return (np.array([norm_time]), self.belief)
+    def _get_state(self) -> tuple[np.array, np.array]:
+
+        _state = (np.array([self.norm_time]), self.damage_state)
+
+        return gym.spaces.utils.flatten(self.state_space, _state)

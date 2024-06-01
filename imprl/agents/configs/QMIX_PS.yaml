@@ -1,0 +1,29 @@
+ALGORITHM: QMIX_PS
+
+NUM_EPISODES: 100_000
+MAX_MEMORY_SIZE: 10_000
+BATCH_SIZE: 64
+TARGET_NETWORK_RESET: 50
+DISCOUNT_FACTOR: 0.99
+USE_STATE_INFO: True
+
+NETWORK_CONFIG:
+    hidden_layers: [64, 64]
+    optimizer: Adam
+    lr: 0.001
+    lr_scheduler:
+        scheduler: LinearLR
+        kwargs:
+            start_factor: 1
+            end_factor: 0.1
+            total_iters: 10_000
+
+MIXER_CONFIG:
+    hypernet_hidden_units: null # or 32
+    mixer_embed_dim: 32
+
+EXPLORATION_STRATEGY:
+      name: epsilon_greedy
+      max_value: 1
+      min_value: 0.005
+      num_episodes: 10_000
