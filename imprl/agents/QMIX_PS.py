@@ -237,7 +237,7 @@ class QMIXParameterSharing(ValueAgent):
         """
         return network.forward(q_values, states)
 
-    def compute_current_values(self, t_ma_obs, t_states, t_actions):
+    def compute_current_values(self, t_ma_obs, t_states, t_beliefs, t_actions):
 
         # shape: (batch_size, n_components, n_comp_actions)
         all_q_values = self.q_network.forward(t_ma_obs)
@@ -247,11 +247,11 @@ class QMIXParameterSharing(ValueAgent):
         if self.use_state_info:
             q_total = self.mixer(self.q_mixer, q_values, t_states)
         else:
-            q_total = self.mixer(self.q_mixer, q_values, t_ma_obs)
+            q_total = self.mixer(self.q_mixer, q_values, t_beliefs)
 
         return q_total
 
-    def get_future_values(self, t_ma_next_obs, t_next_states):
+    def get_future_values(self, t_ma_next_obs, t_next_states, t_next_beliefs):
 
         # compute Q-values using Q-network
         # shape: (batch_size, n_components, n_comp_actions)
@@ -274,14 +274,20 @@ class QMIXParameterSharing(ValueAgent):
         if self.use_state_info:
             q_total_future = self.mixer(self.target_mixer, future_values, t_next_states)
         else:
-            q_total_future = self.mixer(self.target_mixer, future_values, t_ma_next_obs)
+            q_total_future = self.mixer(
+                self.target_mixer, future_values, t_next_beliefs
+            )
 
         return q_total_future.detach()
 
-    def compute_td_target(self, t_next_beliefs, t_next_states, t_rewards, t_dones):
+    def compute_td_target(
+        self, t_ma_next_beliefs, t_next_states, t_next_beliefs, t_rewards, t_dones
+    ):
 
         # bootstrapping
-        future_values = self.get_future_values(t_next_beliefs, t_next_states)
+        future_values = self.get_future_values(
+            t_ma_next_beliefs, t_next_states, t_next_beliefs
+        )
 
         # set future values of done states to 0
         not_dones = 1 - t_dones
@@ -293,9 +299,11 @@ class QMIXParameterSharing(ValueAgent):
     def compute_loss(self, *args):
 
         (
+            t_beliefs,
             t_ma_beliefs,
             t_states,
             t_actions,
+            t_next_beliefs,
             t_ma_next_beliefs,
             t_next_states,
             t_rewards,
@@ -303,10 +311,12 @@ class QMIXParameterSharing(ValueAgent):
         ) = self._preprocess_inputs(*args)
 
         td_target = self.compute_td_target(
-            t_ma_next_beliefs, t_next_states, t_rewards, t_dones
+            t_ma_next_beliefs, t_next_states, t_next_beliefs, t_rewards, t_dones
         )
 
-        current_values = self.compute_current_values(t_ma_beliefs, t_states, t_actions)
+        current_values = self.compute_current_values(
+            t_ma_beliefs, t_states, t_beliefs, t_actions
+        )
 
         loss = torch.nn.functional.mse_loss(current_values, td_target)
 
@@ -334,9 +344,11 @@ class QMIXParameterSharing(ValueAgent):
         ).to(self.device)
 
         return (
+            t_beliefs,
             t_ma_beliefs,
             t_states,
             t_actions,
+            t_next_beliefs,
             t_ma_next_beliefs,
             t_next_states,
             t_rewards,
