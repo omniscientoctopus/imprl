@@ -11,6 +11,8 @@ from imprl.agents.IACC_PS import (
     IndependentActorCentralisedCriticParameterSharing as IACC_PS,
 )
 from imprl.agents.VDN_PS import ValueDecompositionNetworkParameterSharing as VDN_PS
+from imprl.agents.QMIX_PS import QMIXParameterSharing as QMIX_PS
+
 
 def get_agent_class(algorithm):
     try:
