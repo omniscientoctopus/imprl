@@ -18,7 +18,7 @@ conda activate imprl_env
 ### 2. Install the dependencies
 
 ```bash
-pip install poetry==1.8
+pip install poetry==1.8 # or conda install -c conda-forge poetry==1.8
 poetry install
 ```
 
