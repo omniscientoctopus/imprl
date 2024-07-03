@@ -1,7 +1,0 @@
-gym==0.23.1
-matplotlib
-numpy
-torch
-seaborn
-ruamel.yaml
-pytest
